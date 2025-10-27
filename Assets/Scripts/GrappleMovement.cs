@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class GrappleMovement : MonoBehaviour
 {
@@ -14,10 +15,6 @@ public class GrappleMovement : MonoBehaviour
     public float minGrappleLength = 2f;
     public float momentumMultiplier = 1.5f;
     public float airDrag = 0.98f;
-    
-    [Header("Input")]
-    public KeyCode grappleKey = KeyCode.Mouse0;
-    public KeyCode releaseKey = KeyCode.Mouse1;
     
     // Private variables
     private Rigidbody2D rb;
@@ -58,30 +55,40 @@ public class GrappleMovement : MonoBehaviour
     
     void HandleInput()
     {
-        if (Input.GetKeyDown(grappleKey) && !isGrappling)
+        // Use New Input System
+        Mouse mouse = Mouse.current;
+        if (mouse != null)
         {
-            TryGrapple();
-        }
-        
-        if (Input.GetKeyDown(releaseKey) && isGrappling)
-        {
-            ReleaseGrapple();
-        }
-        
-        // Allow extending/retracting grapple length
-        if (isGrappling)
-        {
-            float scroll = Input.GetAxis("Mouse ScrollWheel");
-            if (scroll != 0)
+            // Check for grapple input (left mouse button)
+            if (mouse.leftButton.wasPressedThisFrame && !isGrappling)
             {
-                AdjustGrappleLength(scroll * 2f);
+                TryGrapple();
+            }
+            
+            // Check for release input (right mouse button)
+            if (mouse.rightButton.wasPressedThisFrame && isGrappling)
+            {
+                ReleaseGrapple();
+            }
+            
+            // Allow extending/retracting grapple length
+            if (isGrappling)
+            {
+                Vector2 scroll = mouse.scroll.ReadValue();
+                if (scroll.y != 0)
+                {
+                    AdjustGrappleLength(scroll.y * 0.01f);
+                }
             }
         }
     }
     
     void TryGrapple()
     {
-        Vector2 mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
+        Mouse mouse = Mouse.current;
+        if (mouse == null || cam == null) return;
+        
+        Vector2 mousePos = cam.ScreenToWorldPoint(mouse.position.ReadValue());
         Vector2 direction = (mousePos - (Vector2)transform.position).normalized;
         
         RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, grappleRange, grappleLayerMask);
