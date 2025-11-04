@@ -1000,15 +1000,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   grappleRange: 10
   grappleSpeed: 20
-  swingForce: 15
-  pullForce: 25
+  swingForce: 1.5
+  pullForce: 5
   grappleLayerMask:
     serializedVersion: 2
     m_Bits: 8
   maxGrappleLength: 8
-  minGrappleLength: 2
-  momentumMultiplier: 1.5
-  airDrag: 0.5
+  minGrappleLength: 1
+  momentumMultiplier: 1
+  airDrag: 0.98
 --- !u!114 &1972512688
 MonoBehaviour:
   m_ObjectHideFlags: 0

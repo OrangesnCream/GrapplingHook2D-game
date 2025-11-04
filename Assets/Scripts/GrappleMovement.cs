@@ -44,6 +44,7 @@ public class GrappleMovement : MonoBehaviour
         grappleVisual = GetComponent<Grapplevisual>();
         
         SetupGrappleLine();
+        //lastVelocity = rb.linearVelocity;
     }
     
     void Update()
@@ -169,7 +170,7 @@ public class GrappleMovement : MonoBehaviour
         rb.linearVelocity *= airDrag;
         
         // Store velocity for next frame
-        lastVelocity = rb.linearVelocity;
+        //lastVelocity = rb.linearVelocity;
     }
     
     void ApplySwingForces()
@@ -186,12 +187,26 @@ public class GrappleMovement : MonoBehaviour
     
     void ApplyPullForces()
     {
+        /*
         Vector2 toGrapplePoint = grapplePoint - (Vector2)transform.position;
         Vector2 pullDirection = toGrapplePoint.normalized;
         
         // Apply pull force towards grapple point
         Vector2 pullForceVector = pullDirection * pullForce;
         rb.AddForce(pullForceVector);
+        */
+     Vector2 toAnchor = grapplePoint - (Vector2)transform.position;
+    float dist = toAnchor.magnitude;
+    if (dist < 1e-4f)
+        return; // avoid NaN from normalizing zero
+
+    Vector2 dir = toAnchor / dist; // normalized
+    float addSpeed = 0.05f;         // tune or scale by Time.fixedDeltaTime
+    float currentSpeed = rb.linearVelocity.magnitude;
+    float newSpeed = Mathf.Min(currentSpeed + addSpeed, 50f); // clamp max speed
+
+    rb.linearVelocity = dir * newSpeed;
+    lastVelocity = rb.linearVelocity;
     }
     
     void AdjustGrappleLength(float adjustment)
