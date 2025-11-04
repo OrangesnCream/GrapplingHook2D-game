@@ -142,10 +142,10 @@ public class GrappleMovement : MonoBehaviour
         float distanceToGrapple = toGrapplePoint.magnitude;
         
         // Constrain player to grapple length
-        if (distanceToGrapple > currentGrappleLength)
-        {
+       /* if (distanceToGrapple > currentGrappleLength)
+      //  {
             Vector2 constrainedPos = grapplePoint - toGrapplePoint.normalized * currentGrappleLength;
-            transform.position = constrainedPos;
+            //transform.position = constrainedPos;
             
             // Adjust velocity to maintain constraint
             Vector2 velocityDirection = rb.linearVelocity.normalized;
@@ -154,16 +154,16 @@ public class GrappleMovement : MonoBehaviour
             // Project velocity onto tangent (swing direction)
             float tangentVelocity = Vector2.Dot(rb.linearVelocity, tangentDirection);
             rb.linearVelocity = tangentDirection * tangentVelocity;
-        }
+        }*/
         
         // Apply swing forces
         ApplySwingForces();
         
         // Apply pull forces if player is too far
-        if (distanceToGrapple > currentGrappleLength * 0.8f)
-        {
+        //if (distanceToGrapple > currentGrappleLength * 0.8f)
+       // {
             ApplyPullForces();
-        }
+       // }
         
         // Apply air resistance
         rb.linearVelocity *= airDrag;
