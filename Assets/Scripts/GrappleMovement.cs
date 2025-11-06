@@ -157,7 +157,7 @@ public class GrappleMovement : MonoBehaviour
         }*/
         
         // Apply swing forces
-        ApplySwingForces();
+       // ApplySwingForces();
         
         // Apply pull forces if player is too far
         //if (distanceToGrapple > currentGrappleLength * 0.8f)

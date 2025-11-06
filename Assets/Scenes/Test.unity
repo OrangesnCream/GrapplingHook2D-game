@@ -312,7 +312,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 20
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -863,7 +863,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 10
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_GravityScale: 1
@@ -998,17 +998,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f1f82aff18caf44483ca0e1aa52f5a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grappleRange: 10
+  grappleRange: 100
   grappleSpeed: 20
-  swingForce: 15
-  pullForce: 25
+  swingForce: 150
+  pullForce: 200
   grappleLayerMask:
     serializedVersion: 2
     m_Bits: 8
   maxGrappleLength: 8
   minGrappleLength: 2
   momentumMultiplier: 1.5
-  airDrag: 0.5
+  airDrag: 0.999
 --- !u!114 &1972512688
 MonoBehaviour:
   m_ObjectHideFlags: 0
