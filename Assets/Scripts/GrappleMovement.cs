@@ -145,7 +145,7 @@ public class GrappleMovement : MonoBehaviour
     
     void ApplyPullForces()
     {
-     Vector2 toAnchor = (grapplePoint - (Vector2)transform.position).normalized*100f;
+     Vector2 toAnchor = (grapplePoint - (Vector2)transform.position).normalized*pullForce;
      rb.AddForce(toAnchor);
      if (Vector3.Angle(rb.linearVelocity,toAnchor) > 90f)
          rb.AddForce(-rb.linearVelocity* 2f, ForceMode2D.Force);
