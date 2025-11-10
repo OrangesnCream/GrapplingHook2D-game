@@ -31,7 +31,7 @@ public class CameraMovement : MonoBehaviour
     {
         Vector3 newPosition;
         cameraVelocity = Vector2.Lerp(cameraVelocity, playerVelocity, Time.deltaTime * .5f);
-        newPosition = (Vector3)player.transform.position + (Vector3)cameraVelocity*.12f;
+        newPosition = (Vector3)player.transform.position + (Vector3)cameraVelocity*.17f;
         transform.position = new Vector3(newPosition.x, newPosition.y, transform.position.z);
     }
 }

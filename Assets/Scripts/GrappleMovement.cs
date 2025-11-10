@@ -50,6 +50,9 @@ public class GrappleMovement : MonoBehaviour
     void Update()
     {
         HandleInput();
+
+    }
+    void FixedUpdate(){
         UpdateGrapplePhysics();
         UpdateGrappleVisual();
     }
