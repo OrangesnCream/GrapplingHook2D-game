@@ -44,11 +44,15 @@ public class GrappleMovement : MonoBehaviour
         grappleVisual = GetComponent<Grapplevisual>();
         
         SetupGrappleLine();
+        //lastVelocity = rb.linearVelocity;
     }
     
     void Update()
     {
         HandleInput();
+
+    }
+    void FixedUpdate(){
         UpdateGrapplePhysics();
         UpdateGrappleVisual();
     }
@@ -136,62 +140,18 @@ public class GrappleMovement : MonoBehaviour
     void UpdateGrapplePhysics()
     {
         if (!isGrappling) return;
-        
-        Vector2 playerPos = transform.position;
-        Vector2 toGrapplePoint = grapplePoint - playerPos;
-        float distanceToGrapple = toGrapplePoint.magnitude;
-        
-        // Constrain player to grapple length
-       /* if (distanceToGrapple > currentGrappleLength)
-      //  {
-            Vector2 constrainedPos = grapplePoint - toGrapplePoint.normalized * currentGrappleLength;
-            //transform.position = constrainedPos;
-            
-            // Adjust velocity to maintain constraint
-            Vector2 velocityDirection = rb.linearVelocity.normalized;
-            Vector2 tangentDirection = Vector2.Perpendicular(toGrapplePoint.normalized);
-            
-            // Project velocity onto tangent (swing direction)
-            float tangentVelocity = Vector2.Dot(rb.linearVelocity, tangentDirection);
-            rb.linearVelocity = tangentDirection * tangentVelocity;
-        }*/
-        
-        // Apply swing forces
-       // ApplySwingForces();
-        
-        // Apply pull forces if player is too far
-        //if (distanceToGrapple > currentGrappleLength * 0.8f)
-       // {
             ApplyPullForces();
-       // }
-        
-        // Apply air resistance
+
         rb.linearVelocity *= airDrag;
-        
-        // Store velocity for next frame
-        lastVelocity = rb.linearVelocity;
-    }
-    
-    void ApplySwingForces()
-    {
-        Vector2 toGrapplePoint = grapplePoint - (Vector2)transform.position;
-        Vector2 tangentDirection = Vector2.Perpendicular(toGrapplePoint.normalized);
-        
-        // Calculate swing force based on gravity and current velocity
-        Vector2 gravityForce = Physics2D.gravity * rb.mass;
-        Vector2 swingForceVector = Vector2.Dot(gravityForce, tangentDirection) * tangentDirection * swingForce;
-        
-        rb.AddForce(swingForceVector);
+
     }
     
     void ApplyPullForces()
     {
-        Vector2 toGrapplePoint = grapplePoint - (Vector2)transform.position;
-        Vector2 pullDirection = toGrapplePoint.normalized;
-        
-        // Apply pull force towards grapple point
-        Vector2 pullForceVector = pullDirection * pullForce;
-        rb.AddForce(pullForceVector);
+     Vector2 toAnchor = (grapplePoint - (Vector2)transform.position).normalized*pullForce;
+     rb.AddForce(toAnchor);
+     if (Vector3.Angle(rb.linearVelocity,toAnchor) > 90f)
+         rb.AddForce(-rb.linearVelocity* 2f, ForceMode2D.Force);
     }
     
     void AdjustGrappleLength(float adjustment)
