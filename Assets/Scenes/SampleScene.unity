@@ -3166,7 +3166,7 @@ MonoBehaviour:
   maxAirJumps: 1
   jumpBufferTime: 0.2
   coyoteTime: 0.15
-  wallJumpForce: 180
+  wallJumpForce: 120
   wallJumpHorizontalForce: 120
   wallJumpLayerMask:
     serializedVersion: 2
