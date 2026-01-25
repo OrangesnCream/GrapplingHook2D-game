@@ -66,5 +66,5 @@
     "explorer.fileNesting.patterns": {
         "*.sln": "*.csproj"
     },
-    "dotnet.defaultSolution": "PainProject.sln"
+    "dotnet.defaultSolution": "GrapplingHook2D-game.slnx"
 }

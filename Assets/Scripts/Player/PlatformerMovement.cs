@@ -7,7 +7,7 @@ public class PlatformerMovement : MonoBehaviour
     [SerializeField] private float moveSpeed = 8f;
     [SerializeField] private float acceleration = 50f;
     [SerializeField] private float deceleration = 50f;
-    [SerializeField] private float airControlMultiplier = 0.6f;
+    [SerializeField] private float airControlMultiplier = 1f;
     
     [Header("Jump Settings")]
     [SerializeField] private float jumpForce = 15f;
@@ -125,11 +125,11 @@ public class PlatformerMovement : MonoBehaviour
         float force = velocityDifference * accelerationRate;
         rb.AddForce(new Vector2(force, 0f));
         
-        // Optional: Cap max velocity for smoother control
+        /* Optional: Cap max velocity for smoother control
         if (Mathf.Abs(rb.linearVelocity.x) > moveSpeed)
         {
             rb.linearVelocity = new Vector2(Mathf.Sign(rb.linearVelocity.x) * moveSpeed, rb.linearVelocity.y);
-        }
+        }*/
     }
     
     void HandleJump()

@@ -5,8 +5,6 @@ public class GrappleMovement : MonoBehaviour
 {
     [Header("Grapple Settings")]
     public float grappleRange = 10f;
-    public float grappleSpeed = 20f;
-    public float swingForce = 15f;
     public float pullForce = 25f;
     public LayerMask grappleLayerMask = -1;
     
