@@ -34,6 +34,7 @@ public class PlatformerMovement : MonoBehaviour
     private Vector2 moveInput;
     private bool jumpPressed;
     private float lastJumpPressTime;
+    private bool jumpReleased;
     
     // State
     private bool isGrounded;
@@ -45,6 +46,7 @@ public class PlatformerMovement : MonoBehaviour
     private bool isOnWallRight;
     private float lastWallJumpTime;
     private float wallJumpCooldown = 0.2f;
+
     
     void Start()
     {
@@ -93,11 +95,19 @@ public class PlatformerMovement : MonoBehaviour
         bool jumpButtonPressed = keyboard.wKey.wasPressedThisFrame || 
                                  keyboard.spaceKey.wasPressedThisFrame || 
                                  keyboard.upArrowKey.wasPressedThisFrame;
+        //Jump input released
+        bool jumpButtonReleased = keyboard.wKey.wasReleasedThisFrame || 
+                                 keyboard.spaceKey.wasReleasedThisFrame || 
+                                 keyboard.upArrowKey.wasReleasedThisFrame;
         
         if (jumpButtonPressed)
         {
             jumpPressed = true;
             lastJumpPressTime = Time.time;
+        }
+        if (jumpButtonReleased)
+        {
+            jumpReleased = true;
         }
     }
     
@@ -119,12 +129,32 @@ public class PlatformerMovement : MonoBehaviour
         // Reduce air control
         if (!isGrounded)
         {
-            accelerationRate *= airControlMultiplier;
+
+            accelerationRate *= airControlMultiplier/(Mathf.Abs(velocityDifference*0.10f)+1);
         }
         
         float force = velocityDifference * accelerationRate;
         rb.AddForce(new Vector2(force, 0f));
         
+        //faster fall down for snappier controls
+        if (jumpReleased && rb.linearVelocity.y > 0)
+        {
+            rb.AddForce(Vector2.up * Physics2D.gravity.y * (75f) * rb.mass); 
+        }
+        if (rb.linearVelocity.y < 0f)
+        {
+            //clamp downward velocity to avoid excessive speed
+            rb.AddForce(Vector2.up * Physics2D.gravity.y * (1.5f) * rb.mass);
+            if (rb.linearVelocity.y < -40f){
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, -40f);
+            }
+            
+        }
+        if (jumpReleased){
+            jumpReleased=false;
+        }
+
+
         /* Optional: Cap max velocity for smoother control
         if (Mathf.Abs(rb.linearVelocity.x) > moveSpeed)
         {
@@ -135,11 +165,12 @@ public class PlatformerMovement : MonoBehaviour
     void HandleJump()
     {
         // Don't allow jumping if grappling
+        /*commented out to allow jumping while grappling, due to player getting stuck on walls
         if (grappleMovement != null && grappleMovement.IsGrappling())
         {
             return;
         }
-        
+        */
         // Check if we should jump
         bool canJump = false;
         
@@ -198,6 +229,7 @@ public class PlatformerMovement : MonoBehaviour
             
             lastWallJumpTime = Time.time;
             
+
             Debug.Log("Wall jump!");
         }
         else

@@ -3012,10 +3012,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   grappleRange: 100
-  pullForce: 280
+  pullForce: 400
   grappleLayerMask:
     serializedVersion: 2
     m_Bits: 8
+  grappleBreakForce: 20
   maxGrappleLength: 8
   minGrappleLength: 2
   momentumMultiplier: 1
@@ -3158,8 +3159,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlatformerMovement
   moveSpeed: 8
-  acceleration: 50
-  deceleration: 50
+  acceleration: 75
+  deceleration: 75
   airControlMultiplier: 1
   jumpForce: 150
   maxAirJumps: 1

@@ -1,3 +1,5 @@
+
+
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,19 +9,21 @@ public class GrappleMovement : MonoBehaviour
     public float grappleRange = 10f;
     public float pullForce = 25f;
     public LayerMask grappleLayerMask = -1;
+    public float grappleBreakForce= 20f;
     
     [Header("Physics Settings")]
     public float maxGrappleLength = 8f;
     public float minGrappleLength = 2f;
     public float momentumMultiplier = 1.5f;
     public float airDrag = 0.98f;
+
     
     // Private variables
     private Rigidbody2D rb;
     private bool isGrappling = false;
     private Vector2 grapplePoint;
     private Vector2 grappleDirection;
-    private float currentGrappleLength;
+    private float currentGrappleLength;//this value is never used properly, needs to be implemented
     private Vector2 lastVelocity;
     private Camera cam;
     
@@ -114,7 +118,7 @@ public class GrappleMovement : MonoBehaviour
         // Store initial velocity for momentum calculation
         lastVelocity = rb.linearVelocity;
         
-        Debug.Log($"Grapple attached to {grapplePoint}");
+        //Debug.Log($"Grapple attached to {grapplePoint}");
     }
     
     void ReleaseGrapple()
@@ -146,10 +150,12 @@ public class GrappleMovement : MonoBehaviour
     
     void ApplyPullForces()
     {
-     Vector2 toAnchor = (grapplePoint - (Vector2)transform.position).normalized*pullForce;
-     rb.AddForce(toAnchor);
-     if (Vector3.Angle(rb.linearVelocity,toAnchor) > 90f)
-         rb.AddForce(-rb.linearVelocity* 2f, ForceMode2D.Force);
+        Vector2 toAnchor = (grapplePoint - (Vector2)transform.position).normalized*pullForce;
+        Vector2 velocityInstantaneous = rb.linearVelocity;
+        rb.AddForce(toAnchor);
+        if (Vector3.Angle(rb.linearVelocity,toAnchor) > 90f){
+            rb.AddForce(-rb.linearVelocity* grappleBreakForce, ForceMode2D.Force);
+        }
     }
     
     void AdjustGrappleLength(float adjustment)
