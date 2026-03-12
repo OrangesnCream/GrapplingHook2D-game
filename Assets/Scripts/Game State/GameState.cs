@@ -13,4 +13,8 @@ public class GameState : MonoBehaviour
     {
         
     }
+    public void PlayerDeath()
+    {
+        //trigger for death screen and time stop
+    }
 }
