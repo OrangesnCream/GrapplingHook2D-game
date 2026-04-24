@@ -14,6 +14,8 @@ public class PlatformerMovement : MonoBehaviour
     [SerializeField] private int maxAirJumps = 1;
     [SerializeField] private float jumpBufferTime = 0.2f;
     [SerializeField] private float coyoteTime = 0.15f;
+    [SerializeField] private float gravityModifier = 75f;
+    [SerializeField] private float maxFallModifier=-40f;
     
     [Header("Wall Jump Settings")]
     [SerializeField] private float wallJumpForce = 18f;
@@ -46,6 +48,7 @@ public class PlatformerMovement : MonoBehaviour
     private bool isOnWallRight;
     private float lastWallJumpTime;
     private float wallJumpCooldown = 0.2f;
+
 
     
     void Start()
@@ -126,27 +129,66 @@ public class PlatformerMovement : MonoBehaviour
         // Apply acceleration/deceleration
         float accelerationRate = Mathf.Abs(targetVelocity) > 0.01f ? acceleration : deceleration;
         
-        // Reduce air control
         if (!isGrounded)
         {
 
             accelerationRate *= airControlMultiplier/(Mathf.Abs(velocityDifference*0.10f)+1);
+
+            /* new system, as the speed increases instead of pulling back to the target velocity the player slowly loses the ability 
+            to accelerate forward but still maintains a lot of their ability to decelerate. This eventually tapers off to completely kill 
+            acceleration  in the direction you are moving, basically a whole new movement system
+            */
+            float velocityModifier=accelerationRate*2;//final output 
+            if (currentVelocity*targetVelocity<0)
+            {
+                //turning against velocity
+                if (Mathf.Abs(currentVelocity)>moveSpeed)
+                {
+                    velocityModifier*=0.75f;
+                }else if (Mathf.Abs(currentVelocity)>moveSpeed*2)
+                {
+                    velocityModifier*=0.50f;
+                }else if (Mathf.Abs(currentVelocity) > moveSpeed * 3)
+                {
+                    velocityModifier*=0.25f;
+                }
+            }else if (currentVelocity * targetVelocity > 0)
+            {
+                //turning with velocity
+                if (Mathf.Abs(currentVelocity)>moveSpeed)
+                {
+                    velocityModifier*=0.25f;
+                }else if (Mathf.Abs(currentVelocity)>moveSpeed*2)
+                {
+                    velocityModifier*=0.10f;
+                }else if (Mathf.Abs(currentVelocity) > moveSpeed * 3)
+                {
+                    velocityModifier*=0.5f;
+                }
+            }
+            float force=targetVelocity*velocityModifier;
+            rb.AddForce(new Vector2(force, 0f));
         }
+        else
+        {
+            float force = velocityDifference * accelerationRate;
+            rb.AddForce(new Vector2(force, 0f));
+        }
+         
         
-        float force = velocityDifference * accelerationRate;
-        rb.AddForce(new Vector2(force, 0f));
+        
         
         //faster fall down for snappier controls
-        if (jumpReleased && rb.linearVelocity.y > 0)
+        if (jumpReleased && rb.linearVelocity.y > 0 && airJumpCount == 0)
         {
-            rb.AddForce(Vector2.up * Physics2D.gravity.y * (75f) * rb.mass); 
+            rb.AddForce(Vector2.up * Physics2D.gravity.y * (gravityModifier) * rb.mass); 
         }
         if (rb.linearVelocity.y < 0f)
         {
             //clamp downward velocity to avoid excessive speed
             rb.AddForce(Vector2.up * Physics2D.gravity.y * (1.5f) * rb.mass);
-            if (rb.linearVelocity.y < -40f){
-                rb.linearVelocity = new Vector2(rb.linearVelocity.x, -40f);
+            if (rb.linearVelocity.y < maxFallModifier){
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, maxFallModifier);
             }
             
         }
@@ -155,22 +197,12 @@ public class PlatformerMovement : MonoBehaviour
         }
 
 
-        /* Optional: Cap max velocity for smoother control
-        if (Mathf.Abs(rb.linearVelocity.x) > moveSpeed)
-        {
-            rb.linearVelocity = new Vector2(Mathf.Sign(rb.linearVelocity.x) * moveSpeed, rb.linearVelocity.y);
-        }*/
+
     }
     
     void HandleJump()
     {
-        // Don't allow jumping if grappling
-        /*commented out to allow jumping while grappling, due to player getting stuck on walls
-        if (grappleMovement != null && grappleMovement.IsGrappling())
-        {
-            return;
-        }
-        */
+
         // Check if we should jump
         bool canJump = false;
         
