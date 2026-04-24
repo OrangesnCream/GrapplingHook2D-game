@@ -1,4 +1,5 @@
 
+using System.Runtime.CompilerServices;
 using UnityEngine;
 // handles health and any other player stat and handles the events that happen when a stat reaches some value
 
@@ -29,6 +30,7 @@ public class PlayerStats : MonoBehaviour
         {
              health=newHealth;
         }
+        UiHealthUpdate();
        
     }
     public int GetHealth()
@@ -44,9 +46,11 @@ public class PlayerStats : MonoBehaviour
         if (newHealth < 0)
         {
             health=0;
+            UiHealthUpdate();
             KillPlayer();
             return;
         }
+        UiHealthUpdate();
     } 
     public void KillPlayer()
     {
@@ -68,5 +72,9 @@ public class PlayerStats : MonoBehaviour
     public void ResetPlayer()
     {
         gameObject.transform.position=firstSpawn;
+    }
+    private void UiHealthUpdate()
+    {
+        //Callstatemanager to update UI 
     }
 }
