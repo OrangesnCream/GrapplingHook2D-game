@@ -121,7 +121,7 @@ public class GrappleMovement : MonoBehaviour
         //Debug.Log($"Grapple attached to {grapplePoint}");
     }
     
-    void ReleaseGrapple()
+    public void ReleaseGrapple()
     {
         if (!isGrappling) return;
         

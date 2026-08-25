@@ -57,7 +57,8 @@ public class PlayerStats : MonoBehaviour
         // trigger death screen, send message to the game state manager to do this, manager will also store save points
         stateManager.GetComponent<GameState>().PlayerDeath();
         //send player to either the start of the map or to checkpoint 
-
+        gameObject.GetComponent<GrappleMovement>().ReleaseGrapple();//release grapple so that we don't fling ourselves after dying 
+        
         gameObject.transform.position=spawnLocation;
     }
     public void SetSpawnLocation(Vector2 newSpawn)
