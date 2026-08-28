@@ -6,16 +6,21 @@ using UnityEngine;
 public class PlayerStats : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    private int health=1;
+    [SerializeField] private int health=1;
+    private int maxHealth;
     private Vector2 spawnLocation;
     private Vector2 firstSpawn;
     public GameObject stateManager;
+    [SerializeField] private float damageCooldown = 1f;
+
+    private float nextDamageTime;
     
     void Start()
     {
         //call gamestate manager to set player location, health 
         spawnLocation=gameObject.transform.position;
         firstSpawn=gameObject.transform.position;
+        maxHealth=health;
     }
 
     // Update is called once per frame
@@ -41,8 +46,13 @@ public class PlayerStats : MonoBehaviour
     public void DamagePlayer(int incomingDamage)
     {
         //player only cares about handling incoming damage
-        //damage rate and amount is decided by the source
+        //damage  amount is decided by the source, rate is decided by player 
+        if (Time.time < nextDamageTime)
+            return;
+
         int newHealth=health-incomingDamage;
+        nextDamageTime = Time.time + damageCooldown;
+         Debug.Log("Player damaged. Health: " + newHealth);
         if (newHealth < 0)
         {
             health=0;
@@ -50,6 +60,7 @@ public class PlayerStats : MonoBehaviour
             KillPlayer();
             return;
         }
+        health=newHealth;
         UiHealthUpdate();
     } 
     public void KillPlayer()
@@ -60,6 +71,8 @@ public class PlayerStats : MonoBehaviour
         gameObject.GetComponent<GrappleMovement>().ReleaseGrapple();//release grapple so that we don't fling ourselves after dying 
         
         gameObject.transform.position=spawnLocation;
+        health=maxHealth;
+        
     }
     public void SetSpawnLocation(Vector2 newSpawn)
     {

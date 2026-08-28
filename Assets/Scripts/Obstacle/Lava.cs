@@ -4,7 +4,7 @@ public class Lava : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     [Header("Lava Settings")]
-     [SerializeField]private int damage=1000;
+     [SerializeField]private int damage=1;
     void Start()
     {
         
@@ -13,9 +13,16 @@ public class Lava : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+       
     }
+
    private void OnCollisionEnter2D(Collision2D other) {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            other.gameObject.GetComponent<PlayerStats>().DamagePlayer(damage);
+        }
+    }
+    private void OnCollisionStay2D(Collision2D other) {
         if (other.gameObject.CompareTag("Player"))
         {
             other.gameObject.GetComponent<PlayerStats>().DamagePlayer(damage);

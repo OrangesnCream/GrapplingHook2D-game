@@ -2539,7 +2539,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9bed93da230f554f88c1ecb69ec1f37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lava
-  damage: 1000
+  damage: 1
 --- !u!1 &1598652448
 GameObject:
   m_ObjectHideFlags: 0
@@ -3722,7 +3722,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f5c1a556657f3c48a6119994084b5fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  health: 10
   stateManager: {fileID: 806473006}
+  damageCooldown: 0.5
 --- !u!1 &2119023180
 GameObject:
   m_ObjectHideFlags: 0
