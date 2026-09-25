@@ -16,6 +16,8 @@ public class LevelExit : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D other) {
         if (other.CompareTag("Player")) {
+             string sceneName = SceneManager.GetActiveScene().name;
+            LastLevelInfo.Set(sceneName);
             SceneManager.LoadScene("endscreen");
         }
     }

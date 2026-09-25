@@ -20,9 +20,10 @@ public class PlayerStats : MonoBehaviour
     {
         firstSpawn=gameObject.transform.position;
         var data = SaveSystem.Current;
-        if (data.hasSavedPosition && data.lastSceneName == SceneManager.GetActiveScene().name)
+         string sceneName = SceneManager.GetActiveScene().name;
+         if (SaveSystem.Current.TryGetPosition(sceneName, out Vector2 savedPosition))
         {
-           gameObject.transform.position=data.lastPosition;
+            gameObject.transform.position=savedPosition;
         }
     }
     void Start()
@@ -96,6 +97,7 @@ public class PlayerStats : MonoBehaviour
     public void ResetPlayer()
     {
         gameObject.transform.position=firstSpawn;
+        stateManager.GetComponent<GameState>().SaveCheckpoint(firstSpawn);
     }
     private void UiHealthUpdate()
     {

@@ -15,11 +15,6 @@ public class GameState : MonoBehaviour
     }
     void Start()
     {
-        var data = SaveSystem.Current;
-        if (data.hasSavedPosition && data.lastSceneName == SceneManager.GetActiveScene().name)
-        {
-           //code to set player position
-        }
     }
 
     // Update is called once per frame
@@ -40,12 +35,11 @@ public class GameState : MonoBehaviour
     {
         return SaveSystem.Current.TryGetBestTime(levelId, out float best) ? best : (float?)null;
     }
+
     public void SaveCheckpoint(Vector2 newPosition)
     {
-         var data = SaveSystem.Current;
-        data.hasSavedPosition = true;
-        data.lastSceneName = SceneManager.GetActiveScene().name;
-        data.lastPosition = newPosition;
+        SaveSystem.Current.SetPosition(levelId, newPosition);
         SaveSystem.Save();
     }
+
 }
