@@ -1,6 +1,7 @@
 
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 // handles health and any other player stat and handles the events that happen when a stat reaches some value
 
 public class PlayerStats : MonoBehaviour
@@ -15,11 +16,20 @@ public class PlayerStats : MonoBehaviour
 
     private float nextDamageTime;
     
+    private void Awake()
+    {
+        firstSpawn=gameObject.transform.position;
+        var data = SaveSystem.Current;
+        if (data.hasSavedPosition && data.lastSceneName == SceneManager.GetActiveScene().name)
+        {
+           gameObject.transform.position=data.lastPosition;
+        }
+    }
     void Start()
     {
         //call gamestate manager to set player location, health 
         spawnLocation=gameObject.transform.position;
-        firstSpawn=gameObject.transform.position;
+        
         maxHealth=health;
     }
 
@@ -77,7 +87,7 @@ public class PlayerStats : MonoBehaviour
     public void SetSpawnLocation(Vector2 newSpawn)
     {
         spawnLocation=newSpawn;
-        
+        stateManager.GetComponent<GameState>().SaveCheckpoint(newSpawn);
     }
     public Vector2 GetFirstSpawn()
     {

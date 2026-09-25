@@ -1,58 +1,115 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
-
-public class SaveState : MonoBehaviour
+/// <summary>Best time for a single level.</summary>
+[Serializable]
+public class LevelRecord
 {
-    //this one will read and write to a save file, if the file is not found we make it. \
-    //also need a delete and a reset
-    //this info will be sent to game state or any other script that calls it 
-    //might add other functions for more specific functionality 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public string levelId;
+    public float bestTime;
+}
+ 
+/// <summary>Everything that gets written to save.json.</summary>
+[Serializable]
+public class SaveData
+{
+    public bool hasSavedPosition;
+    public string lastSceneName;
+    public Vector3 lastPosition;
+ 
+    // JsonUtility can't serialize Dictionary, so we use a List instead.
+    public List<LevelRecord> levelRecords = new List<LevelRecord>();
+ 
+    public bool TryGetBestTime(string levelId, out float bestTime)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-    public bool WriteSave(/*what we want to write into the save*/)
-    {
-        //check for null=false
-        //check if the save file exists 
-        //if not then make the file 
-        //add entry into the file, checks will be done by other functions
-        //return  true if succesfull
+        foreach (var record in levelRecords)
+        {
+            if (record.levelId == levelId)
+            {
+                bestTime = record.bestTime;
+                return true;
+            }
+        }
+        bestTime = 0f;
         return false;
     }
-    //replace void with the object type we are returning 
-    public void ReadSave(/*what we want to read from the save, default returns everything?*/)
+ 
+    /// <summary>Stores the time if it's the first one or beats the old best. Returns true if it's a new record.</summary>
+    public bool TrySetBestTime(string levelId, float time)
     {
-        //check for null
-        //check if the save file exists 
-        //if not then make the file 
-        //search the file for the object
-        //if not found 
-        //return null;
-        //else return object
-
-    }
-    public bool DeleteSave(/*what we want to delete*/)
-    {
-        //check for null=false
-        //search the file for the object
-        //if not found 
-        return false;
-        //else 
-        //delete it 
+        foreach (var record in levelRecords)
+        {
+            if (record.levelId != levelId) continue;
+ 
+            if (time < record.bestTime)
+            {
+                record.bestTime = time;
+                return true;
+            }
+            return false;
+        }
+ 
+        levelRecords.Add(new LevelRecord { levelId = levelId, bestTime = time });
         return true;
-
     }
-    public void ResetSave()
+}
+ 
+public static class SaveSystem
+{
+    private static SaveData _current;
+ 
+    // Not a static field initializer: Unity APIs are safest to call lazily.
+    private static string SavePath => Path.Combine(Application.persistentDataPath, "save.json");
+ 
+    /// <summary>The cached save data. Loaded from disk the first time it's accessed.</summary>
+    public static SaveData Current => _current ??= Load();
+ 
+    public static SaveData Load()
     {
-        //deletes save file 
-        //makes new file
+        try
+        {
+            if (File.Exists(SavePath))
+            {
+                string json = File.ReadAllText(SavePath);
+                var data = JsonUtility.FromJson<SaveData>(json);
+                if (data != null) return data;
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"Failed to load save, starting fresh: {e.Message}");
+        }
+ 
+        return new SaveData();
     }
-
+ 
+    public static void Save()
+    {
+        try
+        {
+            string json = JsonUtility.ToJson(Current, true); // true = pretty print
+            string tempPath = SavePath + ".tmp";
+ 
+            // Write to a temp file first so a crash mid-write can't corrupt the real save.
+            File.WriteAllText(tempPath, json);
+ 
+            // Swap the finished temp file in. File.Replace does this as a single
+            // operation, so there is no moment where save.json is missing.
+            if (File.Exists(SavePath))
+                File.Replace(tempPath, SavePath, null);
+            else
+                File.Move(tempPath, SavePath);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Failed to save game: {e.Message}");
+        }
+    }
+ 
+    public static void DeleteSave()
+    {
+        _current = new SaveData();
+        if (File.Exists(SavePath)) File.Delete(SavePath);
+    }
 }
